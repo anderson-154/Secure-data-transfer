@@ -1,9 +1,10 @@
 package main;
 
+import com.google.gson.Gson;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 public class Server {
 
     public static void main(String[] args){
@@ -29,15 +30,21 @@ public class Server {
             RSAAsymetricCrypto encrypter = RSAAsymetricCrypto.getInstance();
 
             //Send Public Key
+            System.out.println("Sending public key...");
+            Gson gson = new Gson();
+            String key_bytes = gson.toJson(encrypter.getPublicKey().getEncoded());
+            bw.write(key_bytes+"\n");
+            bw.flush();
+            System.out.println("Key sent");
 
             //Prepare to receive file
             String file_param = "file1.pdf";
-            String pathToSave = "C:/Users/Ben/Documents/Programas Java/Ciberseguridad/Secure-data-transfer/storage/"+file_param;
+            String pathToSave = "storage/"+file_param;
             File file = new File(pathToSave);
             FileOutputStream fos = new FileOutputStream(file);
 
             //Wait for file...
-            byte[] buffer = new byte[128];
+            byte[] buffer = new byte[256];
             int decryptedReadBytes;
             while(is.read(buffer) != -1){
                 //Decrypt

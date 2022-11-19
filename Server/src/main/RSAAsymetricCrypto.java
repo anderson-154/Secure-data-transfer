@@ -34,8 +34,8 @@ public class RSAAsymetricCrypto {
     private  RSAAsymetricCrypto () {
         //Load keys
         try {
-            publicKey = loadPublicKey("publickey.dat");
-            privateKey = loadPrivateKey("privatekey.dat");
+            publicKey = loadPublicKey("RSAKeys/publickey.dat");
+            privateKey = loadPrivateKey("RSAKeys/privatekey.dat");
             cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         } catch (Exception e) {
             generatePairKeys();
@@ -57,8 +57,8 @@ public class RSAAsymetricCrypto {
             privateKey = keyPair.getPrivate();
 
             //Save keys
-            saveKey(publicKey, "publickey.dat");
-            saveKey(privateKey, "privatekey.dat");
+            saveKey(publicKey, "RSAKeys/publickey.dat");
+            saveKey(privateKey, "RSAKeys/privatekey.dat");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

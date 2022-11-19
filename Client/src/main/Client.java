@@ -1,5 +1,7 @@
 package main;
 
+import com.google.gson.Gson;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -21,7 +23,16 @@ public class Client {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-            //Waiting for Server RSA public key
+            //Waiting for Server RSA public key...
+            System.out.println("Receiving Key...");
+            String line = br.readLine();
+            System.out.println("Success");
+
+            ////Rebuilt object PublicKey
+            Gson gson = new Gson();
+            byte[] bytes_key = gson.fromJson(line, byte[].class);
+            RSAAsymetricCrypto encrypter = new RSAAsymetricCrypto();
+            encrypter.rebuiltKey(bytes_key);
 
             //Waiting for param...
             System.out.println("Waiting for param...");
@@ -29,15 +40,16 @@ public class Client {
             String file_param = scan.nextLine();
 
             //Prepare to send file
-            String file_path = "C:Users/Ben/Documents/Programas Java/Ciberseguridad/Secure-data-transfer-client/files/"+file_param;
+            String file_path = "files/"+file_param;
             File file = new File(file_path);
             FileInputStream fis = new FileInputStream(file);
 
             //Send file
-            byte[] buffer = new byte[128];
-            int readBytes;
-            while((readBytes = fis.read(buffer))!=-1){
-                os.write(buffer, 0, readBytes);
+            byte[] buffer = new byte[64];
+
+            while(fis.read(buffer)!=-1){
+                byte[] bufferEncrypted = encrypter.encrypt(buffer);
+                os.write(bufferEncrypted, 0, bufferEncrypted.length);
             }
 
             //Close all
@@ -51,6 +63,5 @@ public class Client {
         }catch(IOException e){
             e.printStackTrace();
         }
-
     }
 }
