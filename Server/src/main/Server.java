@@ -12,7 +12,7 @@ public class Server {
             //Socket
             ServerSocket server = new ServerSocket(5000);
 
-            //Thread blocked here
+            //TCP Connection
             System.out.println("Waiting for connection");
             Socket socket = server.accept();
             System.out.println("Connected");
@@ -25,22 +25,27 @@ public class Server {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
+            //Initialize cypher and keys
+            RSAAsymetricCrypto encrypter = RSAAsymetricCrypto.getInstance();
+
+            //Send Public Key
+
             //Prepare to receive file
             String file_param = "file1.pdf";
             String pathToSave = "C:/Users/Ben/Documents/Programas Java/Ciberseguridad/Secure-data-transfer/storage/"+file_param;
             File file = new File(pathToSave);
             FileOutputStream fos = new FileOutputStream(file);
 
-            //Send param
-            bw.write(file_param);
-            bw.flush();
-            System.out.println("Param sent ("+file_param+")");
-
-            //Wait for file
+            //Wait for file...
             byte[] buffer = new byte[128];
-            int readBytes;
-            while((readBytes = is.read(buffer)) != -1){
-                fos.write(buffer, 0, readBytes);
+            int decryptedReadBytes;
+            while(is.read(buffer) != -1){
+                //Decrypt
+                byte[] decrypted = encrypter.decrypt(buffer);
+                decryptedReadBytes = decrypted.length;
+
+                //Write
+                fos.write(buffer, 0, decryptedReadBytes);
             }
 
             //Close all

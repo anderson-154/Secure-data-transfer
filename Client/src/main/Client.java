@@ -2,6 +2,7 @@ package main;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
 
@@ -20,9 +21,12 @@ public class Client {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
+            //Waiting for Server RSA public key
+
             //Waiting for param...
             System.out.println("Waiting for param...");
-            String file_param = br.readLine();
+            Scanner scan = new Scanner(System.in);
+            String file_param = scan.nextLine();
 
             //Prepare to send file
             String file_path = "C:Users/Ben/Documents/Programas Java/Ciberseguridad/Secure-data-transfer-client/files/"+file_param;
