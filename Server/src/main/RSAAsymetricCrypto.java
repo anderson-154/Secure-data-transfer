@@ -1,7 +1,9 @@
 package main;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.*;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -10,12 +12,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 
-/**
- * Ejemplo sencillo de encriptado/desencriptado con algoritmo RSA. Se comenta
- * tambien como guardar las claves en fichero y recuperarlas después.
- *
- * @author Chuidiang
- */
 public class RSAAsymetricCrypto {
 
     //Singleton
@@ -36,7 +32,7 @@ public class RSAAsymetricCrypto {
         try {
             publicKey = loadPublicKey("RSAKeys/publickey.dat");
             privateKey = loadPrivateKey("RSAKeys/privatekey.dat");
-            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher = Cipher.getInstance("RSA");
         } catch (Exception e) {
             generatePairKeys();
         }
@@ -84,6 +80,46 @@ public class RSAAsymetricCrypto {
         }
     }
 
+    /**
+     * This method calculates the hash from the corresponding file
+     * {@link <a href="https://howtodoinjava.com/java/java-security/sha-md5-file-checksum-hash/">...</a>}
+     * @author Lokesh Gupta
+     * @param digest the MessageDigest which will be used
+     * @param file the File which we will get the hash from
+     * @return string
+     * @throws IOException exception thrown in case any I/O operation failed or was interrupted
+     */
+    public String getFileChecksum(MessageDigest digest, File file) throws IOException
+    {
+        //Get file input stream for reading the file content
+        FileInputStream fis = new FileInputStream(file);
+
+        //Create byte array to read data in chunks
+        byte[] byteArray = new byte[1024];
+        int bytesCount = 0;
+
+        //Read file data and update in message digest
+        while ((bytesCount = fis.read(byteArray)) != -1) {
+            digest.update(byteArray, 0, bytesCount);
+        };
+
+        //close the stream; We don't need it now.
+        fis.close();
+
+        //Get the hash's bytes
+        byte[] bytes = digest.digest();
+
+        //This bytes[] has bytes in decimal format;
+        //Convert it to hexadecimal format
+        StringBuilder sb = new StringBuilder();
+        for (byte aByte : bytes) {
+            sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        }
+
+        //return complete hash
+        return sb.toString();
+    }
+
     //Getters
     public PublicKey getPublicKey(){
         return publicKey;
@@ -111,8 +147,7 @@ public class RSAAsymetricCrypto {
 
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         KeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
-        PrivateKey keyFromBytes = keyFactory.generatePrivate(keySpec);
-        return keyFromBytes;
+        return keyFactory.generatePrivate(keySpec);
     }
 
     private static void saveKey(Key key, String fileName) throws Exception {

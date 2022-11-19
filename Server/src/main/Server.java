@@ -5,6 +5,9 @@ import com.google.gson.Gson;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class Server {
 
     public static void main(String[] args){
@@ -35,25 +38,47 @@ public class Server {
             String key_bytes = gson.toJson(encrypter.getPublicKey().getEncoded());
             bw.write(key_bytes+"\n");
             bw.flush();
-            System.out.println("Key sent");
+            System.out.println("Key sent\n");
+
+            //Receive info
+            String file_name = br.readLine();
+            String file_size = br.readLine();
+            String hash = br.readLine();
 
             //Prepare to receive file
-            String file_param = "file1.pdf";
-            String pathToSave = "storage/"+file_param;
+            String pathToSave = "storage/"+file_name;
             File file = new File(pathToSave);
             FileOutputStream fos = new FileOutputStream(file);
 
             //Wait for file...
-            byte[] buffer = new byte[256];
-            int decryptedReadBytes;
-            while(is.read(buffer) != -1){
-                //Decrypt
-                byte[] decrypted = encrypter.decrypt(buffer);
-                decryptedReadBytes = decrypted.length;
+            System.out.println("Receiving file...");
+            byte[] encrypted_bytes = gson.fromJson(br.readLine(), byte[].class);
+            System.out.println("Success\n");
 
-                //Write
-                fos.write(buffer, 0, decryptedReadBytes);
-            }
+            //Decrypt file
+            System.out.println("Decrypting file...");
+            byte[] bytes_file= encrypter.decrypt(encrypted_bytes);
+            System.out.println("Success\n");
+
+            //SaveFile
+            System.out.println("Saving file...");
+            fos.write(bytes_file);
+
+            System.out.println("Calculating hash...\n");
+            //Calculate Sha-256
+            MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
+            //SHA-1 checksum
+            String currentHash = encrypter.getFileChecksum(shaDigest, file);
+            String state = currentHash.equals(hash) ?  "CORRECT!" : "CORRUPT!";
+
+            System.out.println("FILE INFO RECEIVED:\n" +
+                    "Name: "+file_name+"\n" +
+                    "Size: "+file_size+"\n" +
+                    "Path: "+pathToSave+"\n"+
+                    "Hash algorithm: SHA-256\n" +
+                    "Current Hash: "+currentHash +"\n" +
+                    "Expected Hash: "+hash+"\n" +
+                    "STATE: "+state);
 
             //Close all
             fos.close();
@@ -65,6 +90,8 @@ public class Server {
 
         }catch(IOException e){
             e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -4,28 +4,19 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import com.google.gson.Gson;
-
-/**
- * Ejemplo sencillo de encriptado/desencriptado con algoritmo RSA. Se comenta
- * tambien como guardar las claves en fichero y recuperarlas después.
- *
- * @author Chuidiang
- */
 public class RSAAsymetricCrypto {
 
     //Constructor
     public RSAAsymetricCrypto() {
         try {
-            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher = Cipher.getInstance("RSA");
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new RuntimeException(e);
         }
@@ -33,11 +24,7 @@ public class RSAAsymetricCrypto {
 
     //Attributes
     private PublicKey publicKey;
-    private Cipher cipher;
-
-    public void setPublicKey(PublicKey key){
-        publicKey = key;
-    }
+    private final Cipher cipher;
 
     //Encrypt
     public byte[] encrypt(byte[] buffer){
@@ -57,5 +44,46 @@ public class RSAAsymetricCrypto {
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * This method calculates the hash from the corresponding file
+     * {@link <a href="https://howtodoinjava.com/java/java-security/sha-md5-file-checksum-hash/">...</a>}
+     * @author Lokesh Gupta
+     * @param digest the MessageDigest which will be used
+     * @param file the File which we will get the hash from
+     * @return string
+     * @throws IOException exception thrown in case any I/O operation failed or was interrupted
+     */
+    public String getFileChecksum(MessageDigest digest, File file) throws IOException
+    {
+        //Get file input stream for reading the file content
+        FileInputStream fis = new FileInputStream(file);
+
+        //Create byte array to read data in chunks
+        byte[] byteArray = new byte[1024];
+        int bytesCount = 0;
+
+        //Read file data and update in message digest
+        while ((bytesCount = fis.read(byteArray)) != -1) {
+            digest.update(byteArray, 0, bytesCount);
+        };
+
+        //close the stream; We don't need it now.
+        fis.close();
+
+        //Get the hash's bytes
+        byte[] bytes = digest.digest();
+
+        //This bytes[] has bytes in decimal format;
+        //Convert it to hexadecimal format
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i< bytes.length ;i++)
+        {
+            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+        }
+
+        //return complete hash
+        return sb.toString();
     }
 }

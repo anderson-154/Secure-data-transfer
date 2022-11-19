@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class Client {
@@ -37,23 +41,31 @@ public class Client {
             //Waiting for param...
             System.out.println("Waiting for param...");
             Scanner scan = new Scanner(System.in);
-            String file_param = scan.nextLine();
-
-            //Prepare to send file
-            String file_path = "files/"+file_param;
+            String file_name = scan.nextLine();
+            String file_path = "files/"+file_name;
             File file = new File(file_path);
-            FileInputStream fis = new FileInputStream(file);
+            byte[] bytes_file = Files.readAllBytes(Paths.get(file_path));
 
-            //Send file
-            byte[] buffer = new byte[64];
+            //Calculate Sha-256
+            MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
+            //SHA-1 checksum
+            String shaChecksum = encrypter.getFileChecksum(shaDigest, file);
+            System.out.println("SHA-256: "+shaChecksum);
 
-            while(fis.read(buffer)!=-1){
-                byte[] bufferEncrypted = encrypter.encrypt(buffer);
-                os.write(bufferEncrypted, 0, bufferEncrypted.length);
-            }
+            //SendInfo
+            bw.write(file_name+"\n");
+            bw.write(bytes_file.length+ " Bytes\n");
+            bw.write(shaChecksum+"\n");
+
+            //Encrypt file
+            byte[] encrypted_bytes = encrypter.encrypt(bytes_file);
+            String fileJson = gson.toJson(encrypted_bytes);
+
+            //Send EncryptedFile
+            bw.write(fileJson+"\n");
+            bw.flush();
 
             //Close all
-            fis.close();
             bw.close();
             br.close();
             is.close();
@@ -62,6 +74,8 @@ public class Client {
 
         }catch(IOException e){
             e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 }
