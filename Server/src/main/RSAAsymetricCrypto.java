@@ -32,7 +32,7 @@ public class RSAAsymetricCrypto {
         try {
             publicKey = loadPublicKey("RSAKeys/publickey.dat");
             privateKey = loadPrivateKey("RSAKeys/privatekey.dat");
-            cipher = Cipher.getInstance("RSA");
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         } catch (Exception e) {
             generatePairKeys();
         }
@@ -61,20 +61,20 @@ public class RSAAsymetricCrypto {
     }
 
     //Encrypt
-    public byte[] encrypt(byte[] buffer){
+    public byte[] encrypt(byte[] buffer, int length){
         try {
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            return cipher.doFinal(buffer);
+            return cipher.doFinal(buffer,0, length);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException(e);
         }
     }
 
     //Decrypt
-    public byte[] decrypt(byte[] buffer){
+    public byte[] decrypt(byte[] buffer,int length){
         try {
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            return cipher.doFinal(buffer);
+            return cipher.doFinal(buffer,0,length);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException(e);
         }

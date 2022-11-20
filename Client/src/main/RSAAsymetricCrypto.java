@@ -1,9 +1,6 @@
 package main;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,7 +13,7 @@ public class RSAAsymetricCrypto {
     //Constructor
     public RSAAsymetricCrypto() {
         try {
-            cipher = Cipher.getInstance("RSA");
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new RuntimeException(e);
         }
@@ -27,10 +24,10 @@ public class RSAAsymetricCrypto {
     private final Cipher cipher;
 
     //Encrypt
-    public byte[] encrypt(byte[] buffer){
+    public byte[] encrypt(byte[] buffer, int length){
         try {
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            return cipher.doFinal(buffer);
+            return cipher.doFinal(buffer,0, length);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException(e);
         }

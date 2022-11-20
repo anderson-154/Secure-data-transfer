@@ -39,31 +39,35 @@ public class Client {
             encrypter.rebuiltKey(bytes_key);
 
             //Waiting for param...
-            System.out.println("Waiting for param...");
+            System.out.println("Put a file in the Path: .../Secure-data-transfer/Client/files/");
+            System.out.println("Type the name of the file with extensions (Ex. file1.pdf): ");
             Scanner scan = new Scanner(System.in);
             String file_name = scan.nextLine();
             String file_path = "files/"+file_name;
             File file = new File(file_path);
-            byte[] bytes_file = Files.readAllBytes(Paths.get(file_path));
+            FileInputStream fis = new FileInputStream(file);
 
             //Calculate Sha-256
             MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
             //SHA-1 checksum
             String shaChecksum = encrypter.getFileChecksum(shaDigest, file);
             System.out.println("SHA-256: "+shaChecksum);
+            long size = Files.size(Paths.get(file_path));
 
             //SendInfo
             bw.write(file_name+"\n");
-            bw.write(bytes_file.length+ " Bytes\n");
+            bw.write(size+ " Bytes\n");
             bw.write(shaChecksum+"\n");
-
-            //Encrypt file
-            byte[] encrypted_bytes = encrypter.encrypt(bytes_file);
-            String fileJson = gson.toJson(encrypted_bytes);
-
-            //Send EncryptedFile
-            bw.write(fileJson+"\n");
             bw.flush();
+
+            //Encrypt and send file
+            byte[] buffer = new byte[245];
+            int readBytes;
+            while((readBytes = fis.read(buffer))!=-1){
+                byte[] encrypted_bytes = encrypter.encrypt(buffer, readBytes);
+                os.write(encrypted_bytes, 0, encrypted_bytes.length);
+                System.out.println("Bytes: "+readBytes+" -- "+encrypted_bytes.length);
+            }
 
             //Close all
             bw.close();

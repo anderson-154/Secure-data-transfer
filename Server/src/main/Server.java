@@ -50,19 +50,16 @@ public class Server {
             File file = new File(pathToSave);
             FileOutputStream fos = new FileOutputStream(file);
 
-            //Wait for file...
-            System.out.println("Receiving file...");
-            byte[] encrypted_bytes = gson.fromJson(br.readLine(), byte[].class);
+            //Receive file and decrypt
+            System.out.println("Receiving an decrypting file...");
+            byte[] buffer = new byte[256];
+            int readBytes;
+            while((readBytes = is.read(buffer))!=-1){
+                byte[] bytes_file = encrypter.decrypt(buffer,readBytes);
+                System.out.println(bytes_file.length);
+                fos.write(bytes_file);
+            }
             System.out.println("Success\n");
-
-            //Decrypt file
-            System.out.println("Decrypting file...");
-            byte[] bytes_file= encrypter.decrypt(encrypted_bytes);
-            System.out.println("Success\n");
-
-            //SaveFile
-            System.out.println("Saving file...");
-            fos.write(bytes_file);
 
             System.out.println("Calculating hash...\n");
             //Calculate Sha-256
