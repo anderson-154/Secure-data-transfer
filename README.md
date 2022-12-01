@@ -19,6 +19,14 @@ Deben desarrollarse dos programas, un cliente y un servidor. El programa servido
 
 Se decidio que el lenguaje de programación por utilizar sea Java puesto que hemos trabajado en el la mayor parte de la carrera y tenemos mayor conocimiento de el.
 
+Luego, definimos las preguntas claves para hacer una investigación:
+
+*1. ¿Cómo definir la clave pública?*
+
+*2. ¿Cómo cifrar con la clave pública?*
+
+*3. ¿Cómo calcular el Hash SHA-256 en el archivo recibido?*
+
 ---
 
 ### Implementación del proyecto
@@ -60,7 +68,7 @@ InputStream is = socket.getInputStream();
 
 Gracias a la investigación realizada, pudimos ir contestando cada una de estas preguntas, y adaptamos el código que fuimos encontrando a nuestras necesidades.
 
-#### 1. ¿Cómo definir las claves privada y pública?
+#### 1. ¿Cómo definir la clave pública?
 
 En el servidor, se define la instancia para generar el par de claves tipo RSA, después se accede a dicho par y se almacenan en variables independientes ambas claves.
 
@@ -84,17 +92,7 @@ encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 byte[] encryptedFileBytes = encryptCipher.doFinal(fileBytes);
 ```
 
-
-#### 3. ¿Cómo descifrar con la clave privada?
-
-En el servidor, después de recibir el archivo, se realiza el mismo procedimiento del cifrado, pero al iniciar la instancia de cifrado se le elige modo de desencripción.
-
-```
-Cipher decryptCipher = Cipher.getInstance("RSA");
-decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
-byte[] decryptedFileBytes = decryptCipher.doFinal(encryptedFileBytes);
-```
-#### 4. ¿Cómo calcular el SHA en el archivo recibido?
+#### 3. ¿Cómo calcular el SHA en el archivo recibido?
 
 Para el cliente y el sercidor, se calcula el SHA-256. Para esto, se utilizó directamente y sin modificación un método extraído de:  [Java File Checksum-MD5 and SHA-256 Hash Example](howtodoinjava.com).
 ```
