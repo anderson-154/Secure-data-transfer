@@ -16,9 +16,9 @@ Deben desarrollarse dos programas, un cliente y un servidor. El programa servido
 
 ### Lenguaje de programación
 
-Se decidio que el lenguaje de programación por utilizar sea Java puesto que hemos trabajado en el la mayor parte de la carrera y tenemos mayor conocimiento de el.
+Se decidio que el lenguaje de programación por utilizar sea Java puesto que hemos trabajado en este la mayor parte de la carrera y tenemos mayor conocimiento de el.
 
-Luego, definimos las preguntas claves para hacer una investigación:
+Luego, definimos las preguntas claves para investigación:
 
 *1. ¿Cómo definir la clave pública?*
 
