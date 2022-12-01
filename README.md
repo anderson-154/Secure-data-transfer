@@ -1,7 +1,6 @@
 # Transferencia de archivos con chequeo de integridad con clave pública.
 ---
 ## Desarrolladores
-
 - Benjamin Silva:  [ben331](https://github.com/ben331)
 - Anderson Cardenas: [anderson-154](https://github.com/anderson-154)
 - Samuel Viviescas: [SamujV](https://github.com/SamujV)
@@ -209,7 +208,6 @@ La primera solución es cifrar el archivo con una llave simétrica, luego encrip
 
 La seguna solución era aumentar el tamaño de la llave RSA. No obstante, por más que lo aumentaramos, solo ibamos a hacer el programa menos eficiente y el aumento en bytes que podíamos cifrar no era suficiente.
 
-Finalmente, se decidió no optar por ninguna de las soluciones, pues no aportaban de manera significativa al proyecto.
 
 ---
 
@@ -218,10 +216,8 @@ Finalmente, se decidió no optar por ninguna de las soluciones, pues no aportaba
 
 * El uso de Json para envío y recepción de cualquier tipo de archivos, simplifica el proceso de programación.
 * Para un manejo más adecuado en tipos de datos y una mayor facilidad en la programación, se considera que una implementación en el lenguaje ***Python*** puede ser mejor para proyectos de seguridad. Evitando posibles errores en los tipos de datos y eliminando la creación de clases en el modelo.
-* Para el problema del tamaño del archivo por cifrar, es posible pensar en una alternativa donde cifremos por partes y mandemos al servidor. Esta posibilidad se contempla para trabajos futuros.
+
 
 Desde lo analizado e implementado en el proyecto, desde un aspecto de seguridad, se concluye que:
 
-*   Existen diversas herramientas para proteger a los usuarios de actividades mal intencionadas en las aplicaciones que desarrollemos, estas herramientas son de fácil acceso y no es muy difícil cuidar a nuestros usuarios.
-*   Es muy fácil recibir ataques en un mundo con gran cantidad de información privilegiada, por lo mismo siempre debemos buscar la forma de asegurar nuestros sistemas.
 *   El chequeo a través de clave pública y privada genera una alta seguridad, ya que no hay un modo sencillo de que nuestra clave privada se vea expuesta. Adicionalmente, en el peor de los casos, si un agente externo malintencionado adquiere la clave pública, no significará ningún peligro.
