@@ -31,8 +31,6 @@ Luego, definimos las preguntas claves para hacer una investigación:
 
 ### Implementación del proyecto
 
-Para crear un cliente y un servidor orientados a la conexión usamos un programa previamente desarrollado en la clase programación en red hace algunos semestres, junto al Profesor Domiciano Rincón.
-
 #### Creación de la conexión entre cliente y servidor
 
 Se activa el servidor a través de la instancia de un *Server Socket*, programando bajo que puerto del servidor se estará escuchando.
@@ -66,7 +64,6 @@ InputStream is = socket.getInputStream();
 
 ---
 
-Gracias a la investigación realizada, pudimos ir contestando cada una de estas preguntas, y adaptamos el código que fuimos encontrando a nuestras necesidades.
 
 #### 1. ¿Cómo definir la clave pública?
 
@@ -94,7 +91,7 @@ byte[] encryptedFileBytes = encryptCipher.doFinal(fileBytes);
 
 #### 3. ¿Cómo calcular el SHA en el archivo recibido?
 
-Para el cliente y el sercidor, se calcula el SHA-256. Para esto, se utilizó directamente y sin modificación un método extraído de:  [Java File Checksum-MD5 and SHA-256 Hash Example](howtodoinjava.com).
+Para el cliente y el servidor, se calcula el SHA-256. Para esto, se utilizó directamente y sin modificación un método extraído de:  [Java File Checksum-MD5 and SHA-256 Hash Example](howtodoinjava.com).
 ```
 MessageDigest shaDigest = MessageDigest.getInstance("SHA-256");
 String shaChecksum = getFileChecksum(shaDigest, file);
